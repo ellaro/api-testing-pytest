@@ -1,41 +1,80 @@
-import requests
-import pytest
 
-def test_get_single_user(base_url):
-    response = requests.get(f"{base_url}/users/2")
-    assert response.status_code == 200
-    assert response.json()["data"]["id"] == 2
+from flask import Flask, jsonify, request
+from pymongo import MongoClient
 
-def create_user_client():
-    url = f"{BASE_URL}/users"
-    user_data = {
-        "name": "Alice",
-        "job": "QA Engineer"
+app = Flask(__name__)
+
+
+@app.route('/users', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    print(data)
+    if not data or not 'name' in data or not 'email' in data:
+        return jsonify({"error": "Invalid input data"}), 400
+
+    new_user = {
+        'name': data['name'],
+        'email': data['email']
     }
-    response = requests.post(url, json=user_data)
-    if response.status_code == 201:
-        user_id = response.json()["id"]
-        print(f"✅ משתמש נוצר בהצלחה! ID: {user_id}")
-        return user_id
+
+    try:
+        collection.insert_one(new_user)
+    except Exception as e:
+        print('insert error')
+        print(e)
+
+    try:
+        json = jsonify(new_user)
+    except Exception as e:
+        print('jsonify error')
+        print(e)
+
+    return jsonify(new_user), 201
+
+
+@app.route('/users/<email_var>', methods=['GET'])
+def get_user(email_var):
+    user = collection.find_one({"email": email_var})
+    if user:
+        user['_id'] = str(user['_id'])
+        return jsonify(user), 200
     else:
-        print("❌ שגיאה ביצירת משתמש:", response.text)
-        return None
+        return jsonify({"error": "User not found"}), 404
 
-def test_update_user(base_url):
-    payload = {
-        "name": "Ella Updated",
-        "job": "Senior QA Engineer"
+
+@app.route('/users/<email_var>', methods=['PUT'])
+def update_user(email_var):
+    user = collection.find_one_and_update({"email": email_var})
+    if not email_var:
+        return jsonify({"error": "user not found"}), 404
+    data = request.json
+    if not data:
+        return jsonify({"error": "No input data provided"}), 400
+
+    updated_data = {
+        "name": data.get("name", user.get("name")),
+        "email": data.get("email", user.get("email"))
     }
-    response = requests.put(f"{base_url}/users/2", json=payload)
-    assert response.status_code == 200
-    assert response.json()["name"] == "Ella Updated"
+    collection.update_one({"email": email_var}, {"$set": updated_data})
+    user.update(updated_data)
+    user["_id"] = str(user["_id"])
 
-def test_delete_user(base_url):
-    response = requests.delete(f"{base_url}/users/2")
-    assert response.status_code == 204
+    return jsonify(user)
 
-# Press the green button in the gutter to run the script.
+
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    user = users.pop(user_id, None)
+    if user:
+        return jsonify({"message": "User deleted successfuly"}), 200
+    else:
+        return jsonify({"message": "User not found"}), 404
+
+
 if __name__ == '__main__':
+    client = MongoClient('mongodb://localhost:27017/')  # Replace with your MongoDB URI
+    db = client['users']  # Replace with your database name
+    collection = db['data']  # Replace with your collection name
+    app.run(debug=True)
 
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

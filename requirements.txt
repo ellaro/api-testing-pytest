@@ -1,0 +1,4 @@
+pytest
+flask
+pymongo
+app
