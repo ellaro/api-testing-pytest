@@ -1,12 +1,13 @@
 import pytest
-from app import app
+from main import app as flask_app
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def client():
-    app.config['TESTING'] = True
-    with app.test_client() as client:
+    flask_app.config['TESTING'] = True
+    with flask_app.test_client() as client:
         yield client
+
 
 def test_get_existing_user(client):
     email = "Dsoron@gmail.com"
@@ -15,6 +16,7 @@ def test_get_existing_user(client):
     data = response.get_json()
     assert "email" in data
     assert data["email"] == email
+
 
 def test_get_non_existing_user(client):
     email = "nonexistentuser@example.com"

@@ -4,6 +4,10 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 
+client = MongoClient('mongodb://localhost:27017/')  # Replace with your MongoDB URI
+db = client['users']  # Replace with your database name
+collection = db['data']  # Replace with your collection name
+
 
 @app.route('/users', methods=['POST'])
 def create_user():
@@ -42,29 +46,32 @@ def get_user(email_var):
         return jsonify({"error": "User not found"}), 404
 
 
-@app.route('/users/<email_var>', methods=['PUT'])
-def update_user(email_var):
-    user = collection.find_one_and_update({"email": email_var})
-    if not email_var:
+@app.route('/users', methods=['PUT'])
+def update_user():
+    data = request.get_json()
+    if not data or 'email' not in data:
+        return jsonify({"error": "Invalid input data"}), 400
+
+    filter_query = {"email": data["email"]}
+
+    set_data = {'email': data['new_email']}
+    new_values = {"$set": set_data}
+
+    user = collection.find_one_and_update(filter=filter_query, update=new_values)
+    print(user)
+
+    if not user:
         return jsonify({"error": "user not found"}), 404
-    data = request.json
-    if not data:
-        return jsonify({"error": "No input data provided"}), 400
 
-    updated_data = {
-        "name": data.get("name", user.get("name")),
-        "email": data.get("email", user.get("email"))
-    }
-    collection.update_one({"email": email_var}, {"$set": updated_data})
-    user.update(updated_data)
     user["_id"] = str(user["_id"])
+    return jsonify(user), 200
 
-    return jsonify(user)
 
+@app.route('/users', methods=['DELETE'])
+def delete_user():
+    data = request.get_json()
 
-@app.route('/users/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    user = users.pop(user_id, None)
+    user = collection.delete_one({"email": data['email']})
     if user:
         return jsonify({"message": "User deleted successfuly"}), 200
     else:
@@ -72,9 +79,6 @@ def delete_user(user_id):
 
 
 if __name__ == '__main__':
-    client = MongoClient('mongodb://localhost:27017/')  # Replace with your MongoDB URI
-    db = client['users']  # Replace with your database name
-    collection = db['data']  # Replace with your collection name
     app.run(debug=True)
 
 
