@@ -1,15 +1,16 @@
 python env requirements:
-**pip install -r requirements.txt
-**
+
+
+**pip install -r requirements.txt**
 
 
 run flask RESTful server:
-**python ./src/main.py
-**
+
+
+**python ./src/main.py**
 
 
 run pytest:
 
 
-**python -m pytest ./src/tests.py
-**
+**python -m pytest ./src/tests.py**
