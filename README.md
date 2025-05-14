@@ -100,7 +100,6 @@ ENTRYPOINT ["python3", "main.py"]
 - **PyMongo** – MongoDB integration for Python
 - **Pytest** – testing framework
 - **Docker** – containerization
-
 ---
 
 ## 🏷 Tags
