@@ -1,93 +1,114 @@
-# Flask MongoDB User API
+# 🧪 Flask MongoDB User API
 
-A lightweight RESTful API built with Flask and MongoDB for basic user management operations (Create, Read, Update, Delete).
+This is a simple RESTful API built with **Flask** and **MongoDB**, enabling full CRUD operations (Create, Read, Update, Delete) for user data. The project includes Docker support and Pytest-based automated tests.
 
-## 🚀 Features
+---
 
-- ✅ **Create User** – Add a new user with name and email.
-- ✅ **Get User** – Retrieve a user by email.
-- ✅ **Update User** – Update user's email.
-- ✅ **Delete User** – Remove user by email.
-- ✅ **Docker Support** – Run the app easily in a container.
-- ✅ **Pytest Unit Tests** – Includes basic automated tests.
-
-## 🧠 Tech Stack
-
-- Python 3.10
-- Flask
-- PyMongo
-- MongoDB
-- Pytest
-- Docker
-
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```
-/ella
-├── main.py             # Flask app
-├── requirements.txt    # Python dependencies
-├── Dockerfile          # Docker setup
-├── tests.py            # Pytest test file
-└── README.md           # Project documentation
+project/
+├── src/
+│   ├── main.py          # Flask app with endpoints
+│   └── tests.py         # Pytest test cases
+├── requirements.txt     # Python dependencies
+├── Dockerfile           # Docker container setup
+└── README.md            # Project documentation
 ```
 
-## 📦 Requirements
+---
 
-Install required dependencies:
+## ⚙️ Python Environment Setup
+
+1. Make sure you have **Python 3.10+** installed.
+2. Install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Ensure you have a local MongoDB instance running on:
+---
 
-```
-mongodb://localhost:27017/
-```
-
-## ▶️ Run the Flask Server
+## ▶️ Run Flask RESTful Server
 
 ```bash
-python main.py
+python ./src/main.py
 ```
 
-## 🧪 Run Tests
+The API will be available at `http://localhost:5000`.
 
-You can run the automated tests using:
+---
 
-```bash
-python -m pytest ./tests.py
-```
+## ✅ Run Pytest Tests
 
-Or, if your tests are inside a `src/` folder:
+To execute automated tests:
 
 ```bash
 python -m pytest ./src/tests.py
 ```
 
+Ensure your local MongoDB server is running and reachable at `mongodb://localhost:27017/`.
+
+---
+
 ## 🐳 Run with Docker
 
-Build and run using Docker:
+### 1. Build Docker image:
 
 ```bash
-docker build -t flask-api .
-docker run -p 5000:5000 flask-api
+docker build -t flask-user-api .
 ```
+
+### 2. Run Docker container:
+
+```bash
+docker run -p 5000:5000 flask-user-api
+```
+
+### Dockerfile Overview
+
+```dockerfile
+FROM python:3.10
+
+WORKDIR /ella
+
+COPY main.py requirements.txt .
+
+RUN pip install -r requirements.txt
+
+EXPOSE 5000
+ENTRYPOINT ["python3", "main.py"]
+```
+
+> 📌 You can modify `main.py` to use relative paths (like `src/main.py`) if needed.
+
+---
 
 ## 📌 Notes
 
-- The app automatically creates the `users` database and the `data` collection.
-- The email used in tests must already exist in the database (`Dsoron@gmail.com` is used in `test_get_existing_user`).
-- You can modify the database/collection name in `main.py`.
+- The app uses MongoDB and stores user data in the `users` database and `data` collection.
+- The tests in `tests.py` include:
+  - Fetching an existing user (`Dsoron@gmail.com`)
+  - Fetching a non-existent user (should return 404)
+- You can expand the test coverage using the modular design of the code.
 
-## 🏆 Credits
+---
 
-Developed using:
-- Flask Web Framework
-- PyMongo for MongoDB integration
-- Pytest for testing
+## 🧰 Tech Stack
+
+- **Flask** – lightweight web framework
+- **PyMongo** – MongoDB integration for Python
+- **Pytest** – testing framework
+- **Docker** – containerization
+
+---
 
 ## 🏷 Tags
 
-`#flask` `#mongodb` `#api` `#python` `#docker` `#pytest` `#qa` `#automation`
+`#flask` `#mongodb` `#api` `#python` `#docker` `#pytest` `#restful` `#automation` `#qa`
 
+---
+
+## 👩‍💻 Author
+
+Made with ❤️ by a passionate QA and Python developer.
