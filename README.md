@@ -56,7 +56,7 @@ Ensure your local MongoDB server is running and reachable at `mongodb://localhos
 ### 1. Build Docker image:
 
 ```bash
-docker build -t flask-user-api .
+docker build -t flask-user-api ./src
 ```
 
 ### 2. Run Docker container:
